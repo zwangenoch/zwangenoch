@@ -22,7 +22,7 @@ else
                 || abs(table(i, 2) - table_v(n-1, 2)) <= margin
             table_v(n, 3) = min([table_v(n-1, 3), table(i, 3)]);
         elseif abs(table(i, 2) - table_v(n-1, 2)) >= (2*(length - margin))
-            table_v (n, 2) = table(n-1, 2) + length;
+            table_v (n, 2) = table_v(n-1, 2) + length;
             table_v (n, 3) = 3;     
             n = n + 1;
         else
