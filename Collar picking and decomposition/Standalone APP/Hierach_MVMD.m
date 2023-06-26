@@ -103,7 +103,7 @@ yy=t(c);
 %Apply MVMD for u2 (defined below) to identify the colar signal
 u2 = signal_filter-(squeeze(uu1(1,:,:)+u(end,:,:)))';  
 cu2=u2;
-for i=1:96
+for i=1:size(vdl, 2)
     index=find(cu2(i,:)<0);
     cu2(i,index)=0;
 end
