@@ -87,12 +87,12 @@ u1 = (squeeze(u(1,:, :)))';
    
 
 
-% Plot the figure of baseline
-x = [1:size(vdl, 2)];
-IMF2_1=squeeze(uu1(1,:,:));
-yy=t(c);
+% % Plot the figure of baseline
+% x = [1:size(vdl, 2)];
+% IMF2_1=squeeze(uu1(1,:,:));
+% yy=t(c);
 % figure(4);
-% imagesc(x, yy, IMF2_1(:, 10:96));
+% imagesc(x, yy, IMF2_1(:, 1:96));
 % colormap(newmap);
 % caxis([-0.02, 0.02]);
 % colorbar('northoutside');
@@ -134,7 +134,7 @@ end
 
 % cut off cuu2(1,;,:) if it implies the initial colar signal.  In some cases, cuu(2,:,;) may represent the initial colar
 % signal. 
-colar0=squeeze(cuu2(1,:,:));
+colar0=squeeze(cuu2(2,:,:));
 for i=1:size(vdl, 2)
     index=find(colar0(:,i)<0);
     colar0(index, i)=0;
@@ -149,15 +149,14 @@ yy=t(c);
 % title('colar0', 'FontSize', 20)
 % hold on;
 
+data_allCH = colar0;
+depth_out = yy;
 
 
-
-
-
-%Hierarchical MVMD to identify colar1 (more clear colar)
-
-[cuu3, u_hat, omega] = MVMD_ver1((colar0)', 2000, 0, 2, 0, 1, 1e-7);
-
+% %Hierarchical MVMD to identify colar1 (more clear colar)
+% 
+% [cuu3, u_hat, omega] = MVMD_ver1((colar0)', 2000, 0, 2, 0, 1, 1e-7);
+% 
 % figure(7)
 %     subplot(3,1,1)
 %     plot(t(c), colar0(:,60))
@@ -170,16 +169,14 @@ yy=t(c);
 %     subplot(3,1,3)
 %     plot(t(c), cuu3(2,:,60))
 %     title('IMF2', 'FontSize', 20)
-    
-%% We think cuu3(2,:,:) represents colar1 signal 
-colar1=squeeze(cuu3(2,:,:));
-for i=1:size(vdl, 2)
-    index=find(colar1(:,i)<0);
-    colar1(index, i)=0;
-end
-
-data_allCH = colar0;
-depth_out = yy;
+%     
+% %% We think cuu3(2,:,:) represents colar1 signal 
+% colar1=squeeze(cuu3(2,:,:));
+% for i=1:size(vdl, 2)
+%     index=find(colar1(:,i)<0);
+%     colar1(index, i)=0;
+% end
+% 
 
 % figure(8);
 % imagesc(x, yy, colar1(:, 10:96));

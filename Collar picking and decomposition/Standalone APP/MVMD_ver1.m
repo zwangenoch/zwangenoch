@@ -1,4 +1,4 @@
-function [u, u_hat, omega] = MVMD_new(signal, alpha, tau, K, DC, init, tol)
+function [u, u_hat, omega] = MVMD_ver1(signal, alpha, tau, K, DC, init, tol)
 % Multivariate Variational Mode Decomposition
 %
 % The function MVMD applies the "Multivariate Variational Mode Decomposition (MVMD)" algorithm to multivariate or multichannel data sets. 
