@@ -8,7 +8,8 @@ newCH = CH;
 % find the first CH to be aligned
 diff = ceil(max(testConfig.adec_idx_end)/20);
 
-if CH == any(testConfig.adec_idx_start)
+if CH == testConfig.adec_idx_start(1) || CH == testConfig.adec_idx_start(2) ||...
+        CH == testConfig.adec_idx_start(3)
     idx = CH;
     CH = CH + 2;
 elseif CH < testConfig.adec_idx_end(1)
