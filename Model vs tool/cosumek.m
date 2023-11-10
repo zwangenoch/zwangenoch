@@ -15,6 +15,7 @@ pickedT = testConfig.chstarttime(pickedCH);
 emf = emf_align;
 for j = alignT:testConfig.chendtime(testConfig.adec_idx_end(sensorNom))
     emf(j) = emf_nom(j) + ((emf_align(j) - emf_nom(j))/k);   
+    a(j) = ((emf_align(j) - emf_nom(j)));
     if emf(j) <= 0
         emf(j) = 0.01;
     end       

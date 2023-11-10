@@ -3,8 +3,6 @@ function [aligned_data, D, newCH, alignCH] = align(raw_data, nom_data, CH, testC
 % this function is to align the raw ADEC data with nominal data at selected CH
 % D is for calculating k
 
-newCH = CH;
-
 % find the first CH to be aligned
 diff = ceil(max(testConfig.adec_idx_end)/20);
 
@@ -12,8 +10,8 @@ if CH == testConfig.adec_idx_start(1) || CH == testConfig.adec_idx_start(2) ||..
         CH == testConfig.adec_idx_start(3)
     idx = CH;
     CH = CH + 2;
-elseif CH < testConfig.adec_idx_end(1)
-    msgbox("A problem with CH");
+elseif CH < testConfig.adec_idx_start(1)
+    msgbox("Picked CH must be greater than 1");
 elseif CH > testConfig.adec_idx_start(1) && CH <= testConfig.adec_idx_end(1)
     if CH - testConfig.adec_idx_start(1) >= diff
         idx = CH - diff + 1;
@@ -33,7 +31,7 @@ elseif CH > testConfig.adec_idx_start(3)
         idx = testConfig.adec_idx_start(3) + 1;
     end  
 else
-    msgbox("A problem with CH");
+    msgbox("Picked CH cannot be greater than last CH");
 end
 
 % alignment in log scale
@@ -46,4 +44,5 @@ end
 D = abs(aligned_data(CH) - nom_data(CH));
 
 alignCH = idx;
+newCH = CH;
 end
