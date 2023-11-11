@@ -1,4 +1,4 @@
-function [decay_out] = correctdecay(decay, CHflag, logflag, config)
+function [decay_out] = correctnom(decay, CHflag, logflag, config)
 
 % this function is correct decay from logging or modeling by replace the
 % later chs with straight line in log domain
@@ -18,25 +18,12 @@ end
 
 % correct all available sensors
 for i = 1:3
-    if (i==3 && config.sensor(i) == 1) || (i ~= 3 && (config.sensor(i+1) == 0))
+    if config.sensor(i) == 1
         idx = 0;
-        % find the point that FM curve bend up and then bend down
-        % the 2nd order derivation will cross 0
-        n = 0;
-        diff2_decay = diff(diff(decay_t));
-        for k = config.chstarttime(config.adec_idx_start(i)):(config.chendtime(config.adec_idx_end(i))-2)
-            if diff2_decay(k) < 0 && n < 5
-                n = n + 1;
-            elseif diff2_decay(k) > 0 && n < 5
-                n = 0;
-            elseif n >= 5
-                idx = k - 4;
-                break
-            end
-        end
+        idx = find(decay_t < log10(9),1, 'first');
         
         if  isempty(idx) || idx == 0
-            idx = floor(5/6*config.chendtime(config.adec_idx_end(i)));
+            idx = floor(4/5*config.chendtime(config.adec_idx_end(i)));
         end
         
         % find current sensor and compare with first ch of current sensor
