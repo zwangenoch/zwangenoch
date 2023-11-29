@@ -1,5 +1,8 @@
-function [emf] = cosumek(emf_thin, emf_nom, k, pickedCH, alignCH, testConfig, sensorNom)
+function [emf] = cosumek(emf_thin, emf_nom, emf_adj, k, pickedCH, alignCH, testConfig, sensorNom)
 % this function is to consume k to modify emf_thin to proper numbers
+% emf_thin is FM thin without abcd
+% emf_nom is FM nom without abcd
+% emf_adj is FM nom with abcd
 
 % align at alignCH in ms
 emf_align = emf_nom;
@@ -12,9 +15,9 @@ end
 pickedT = testConfig.chstarttime(pickedCH);
 %D = (emf_align(pickedT) - emf_nom(pickedT))/k;
 
-emf = emf_align;
+emf = emf_adj;
 for j = alignT:testConfig.chendtime(testConfig.adec_idx_end(sensorNom))
-    emf(j) = emf_nom(j) + ((emf_align(j) - emf_nom(j))/k);   
+    emf(j) = emf_adj(j) - (abs(emf_align(j) - emf_nom(j))/k);   
     a(j) = ((emf_align(j) - emf_nom(j)));
     if emf(j) <= 0
         emf(j) = 0.01;

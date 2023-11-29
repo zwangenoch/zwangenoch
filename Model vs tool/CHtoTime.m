@@ -39,7 +39,7 @@ for i = istart:iend
         idx_increase = find(diff_y>0, 1, 'first');
         if ~isempty(idx_increase)
             for m = idx_increase:size(y,2)
-                y(m) = y(m-1) - (y(m-10)-y(m-1))/9;
+                y(m) = y(m-1) - (y(m-5)-y(m-1))/4;
             end
         end
         

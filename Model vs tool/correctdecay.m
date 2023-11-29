@@ -11,6 +11,9 @@ else
     decay_t = decay;
 end
 
+% avoid decay_t has negative numbers
+lasttwopositive = find(decay_t > 0, 2, 'last');
+decay_t(decay_t <= 0) = decay_t(lasttwopositive(1));
 % find first value below 9
 if logflag == 0
     decay_t = log10(decay_t);
@@ -24,8 +27,8 @@ for i = 1:3
         % the 2nd order derivation will cross 0
         n = 0;
         diff2_decay = diff(diff(decay_t));
-        for k = config.chstarttime(config.adec_idx_start(i)):(config.chendtime(config.adec_idx_end(i))-2)
-            if diff2_decay(k) < 0 && n < 5
+        for k = config.chstarttime(config.adec_idx_start(i)+1):(config.chendtime(config.adec_idx_end(i))-2)
+            if diff2_decay(k) <= 0 && n < 5
                 n = n + 1;
             elseif diff2_decay(k) > 0 && n < 5
                 n = 0;
@@ -41,7 +44,7 @@ for i = 1:3
         
         % find current sensor and compare with first ch of current sensor
         %sensor_No = find(config.chstarttime(config.adec_idx_end) >= idx, 1, 'last');
-        if idx < (config.chendtime(config.adec_idx_start(i))+3)
+        if idx < (config.chstarttime(config.adec_idx_start(i)))+3
             msgbox("Nominal value in bad quality, please re-select.");
             return
         end
@@ -67,15 +70,28 @@ if CHflag == 1
                 decay_out(j) = mean(decay_corrected(...
                     (config.chstarttime(j) + 1):config.chendtime(j)), 2);
             end
+            % smooth decay_out
+            for m = (config.chstarttime(config.adec_idx_start(i))+1+2):...
+                    (config.chendtime(config.adec_idx_end(i))-2)                
+                decay_out(m) = mean(decay_out(m-2:m+2));
+            end
         elseif i == 2 && config.sensor(i)
             for j = config.adec_idx_start(i):config.adec_idx_end(i)
                 decay_out(j) = mean(decay_corrected(...
                     (config.chstarttime(j) + 1):config.chendtime(j)), 2);
             end
+            for m = (config.chstarttime(config.adec_idx_start(i))+1+2):...
+                    (config.chendtime(config.adec_idx_end(i))-2)                
+                decay_out(m) = mean(decay_out(m-2:m+2));
+            end
         elseif i == 3 && config.sensor(i)
             for j = config.adec_idx_start(i):config.adec_idx_end(i)
                 decay_out(j) = mean(decay_corrected(...
                     (config.chstarttime(j) + 1):config.chendtime(j)), 2);
+            end
+            for m = (config.chstarttime(config.adec_idx_start(i))+1+2):...
+                    (config.chendtime(config.adec_idx_end(i))-2)                
+                decay_out(m) = mean(decay_out(m-2:m+2));
             end
         end
     end
