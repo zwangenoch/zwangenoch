@@ -40,7 +40,7 @@ for p_No = 1:size(collar_info, 2)
     if p_No < 3 && p_No < size(collar_info, 2)
         % make decision from anchor to bottom
         i = anchor_idx;        
-        while i <= size(collar_info, 1)
+        while i <= size(collar_info, 1) && i>= 1
             flag_repeat = 0;
             if collar_info(i, p_No) == p_No
                 if abs(depth(i) - table(i_table - 1, 2)) <= (length+1*margin) && ...
@@ -285,8 +285,9 @@ for p_No = 1:size(collar_info, 2)
     end
 %%% count from anchor point to the top
     if p_No < 3 && p_No < size(collar_info, 2)
-        i = anchor_idx;                    
-        while i > 1
+        i = anchor_idx;    
+        table_len = 1;
+        while i > 1 && table_len <= size(collar_info, 1)
             flag_repeat = 0;
             if collar_info(i, p_No) == p_No
                 if abs(depth(i) - table_r(i_table_r - 1, 2)) <= (length+1*margin) && ...
@@ -527,6 +528,7 @@ for p_No = 1:size(collar_info, 2)
             if flag_repeat == 0
                 i = i - 1;
             end
+            table_len = size(find(table_r(:, 2)>0), 1);
         end
     end
     
@@ -534,7 +536,7 @@ for p_No = 1:size(collar_info, 2)
     if p_No > 2 || p_No == size(collar_info, 2)
         % make decision from anchor to bottom
         i = anchor_idx;        
-        while i <= size(collar_info, 1)
+        while i <= size(collar_info, 1) && i >= 1
             flag_repeat = 0;
             if collar_info(i, p_No) == p_No
                 if abs(depth(i) - table(i_table - 1, 2)) <= (length+1*margin) && ...
@@ -675,8 +677,9 @@ for p_No = 1:size(collar_info, 2)
     end
     %%% count from anchor point to the top
     if p_No > 2 || p_No == size(collar_info, 2)
-        i = anchor_idx;                    
-        while i > 1
+        i = anchor_idx; 
+        table_len = 1;
+        while i > 1 && table_len <= size(collar_info, 1)
             flag_repeat = 0;
             if collar_info(i, p_No) == p_No
                 if abs(depth(i) - table_r(i_table_r - 1, 2)) <= (length+1*margin) && ...
@@ -807,6 +810,7 @@ for p_No = 1:size(collar_info, 2)
             if flag_repeat == 0
                 i = i - 1;
             end
+            table_len = size(find(table_r(:, 2)>0), 1);
         end
     end
 
@@ -820,15 +824,35 @@ for p_No = 1:size(collar_info, 2)
         table_final = sortrows(table_final, 2);
         if p_No == 1
             table_P1 = table_final;
-%             table_P1_v = verify(table_P1, length);
+            % replaced the closest collar depth with anchor depth
+            [~, anchr_idx] = min(abs(table_P1(:, 2) - anchor_depth(1)));
+            achr_depth = table_P1(anchr_idx, 2);
+            table_P1(table_P1(:, 2) == achr_depth, 3) = 1;
+            table_P1(table_P1(:, 2) == achr_depth, 2) = anchor_depth(1);
         elseif p_No == 2
             table_P2 = table_final;
+            [~, anchr_idx] = min(abs(table_P2(:, 2) - anchor_depth(2)));
+            achr_depth = table_P2(anchr_idx, 2);
+            table_P2(table_P2(:, 2) == achr_depth, 3) = 1;
+            table_P2(table_P2(:, 2) == achr_depth, 2) = anchor_depth(2);
         elseif p_No == 3
             table_P3 = table_final;
+            [~, anchr_idx] = min(abs(table_P3(:, 2) - anchor_depth(3)));
+            achr_depth = table_P3(anchr_idx, 2);
+            table_P3(table_P3(:, 2) == achr_depth, 3) = 1;
+            table_P3(table_P3(:, 2) == achr_depth, 2) = anchor_depth(3);
         elseif p_No == 4
             table_P4 = table_final;
+            [~, anchr_idx] = min(abs(table_P4(:, 2) - anchor_depth(4)));
+            achr_depth = table_P4(anchr_idx, 2);
+            table_P4(table_P4(:, 2) == achr_depth, 3) = 1;
+            table_P4(table_P4(:, 2) == achr_depth, 2) = anchor_depth(4);
         elseif p_No == 5
             table_P5 = table_final;
+            [~, anchr_idx] = min(abs(table_P5(:, 2) - anchor_depth(5)));
+            achr_depth = table_P5(anchr_idx, 2);
+            table_P5(table_P5(:, 2) == achr_depth, 3) = 1;
+            table_P5(table_P5(:, 2) == achr_depth, 2) = anchor_depth(5);
         end        
         
 
