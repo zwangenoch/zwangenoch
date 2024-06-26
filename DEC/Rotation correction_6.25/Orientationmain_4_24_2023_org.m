@@ -1,5 +1,5 @@
 function [ThetaDE,FullOrientation,... %BCasing1, BTubing1,
-    BCasinOriented, BTubinOriented,Depth_new] = Orientationmain_4_24_2023( depth, gyro_readings, Dataace22,...
+    BCasinOriented, BTubinOriented,Depth_new] = Orientationmain_4_24_2023_org( depth, gyro_readings, Dataace22,...
     gyro_temperature, ccb_temp, seq_num, casing_original,tubing_original,realtime_angle_original2,Tool_num,data_flag)
 % depth(realtime_angle_original2==0)=[];
 % gyro_readings(realtime_angle_original2==0,:)=[];
@@ -100,7 +100,7 @@ for i=2:length(SeqNum2)
         drd=drd+1;
     end 
 end
-% data_flag = 0;
+% 
 Dataace2 = zeros(drd,6);     % two accelerometer with 3 axis, sampling at 100ms
 TGyro= zeros(drd,1);      % Temperature Data at Digital Gyro.
 TAccel= zeros(drd,1);      % Temperature Data at Controller Board.
@@ -179,7 +179,8 @@ for i=1:length(TGyro)
 end
 
 % [GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
-[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_11_3_2023(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+data_flag = 1;
 for i=1:length(TGyro)
    if i==1
                [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
@@ -187,7 +188,7 @@ for i=1:length(TGyro)
    else 
                [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
 %         [PHiDE(i),ThetaDE(i)] = AccDE01_7_21_2021(Dataace2(i,:),TAccel(i),xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
-        [gyro_angle(i),offset(i)]=gyroalgorithm_7_21_2021(Gyro(i,:),TGyro(i),seq(i),offset(i-1),seq(i-1),CalibTGyroPro,GyroProCalib,SC,data_flag,realtime_angle_original(i)); 
+        [gyro_angle(i),offset(i)]=gyroalgorithm_6_25_24(Gyro(i,:),TGyro(i),seq(i),offset(i-1),seq(i-1),CalibTGyroPro,GyroProCalib,SC,data_flag,realtime_angle_original(i)); 
        
         if (abs(ThetaDE(i))>5)
             if (PHiDE(i)-PHiDE(i-1))>180

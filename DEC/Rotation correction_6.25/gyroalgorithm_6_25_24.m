@@ -1,4 +1,4 @@
-function [gyro_angle,gyro_anglep1]=gyroalgorithm_7_21_2021(DGyro,TTr,seq,gyro_anglep,seqp,calibT,calib,SC,data_flag,realtime_angle_original)
+function [gyro_angle,gyro_anglep1, Gyrostat, x]=gyroalgorithm_6_25_24(DGyro,TTr,seq,gyro_anglep,seqp,calibT,calib,SC,data_flag,realtime_angle_original)
     %Raw data
 % output: gyro_angle: anlge measured after 
 % input :DGyro Gyro raw data 
@@ -37,13 +37,13 @@ function [gyro_angle,gyro_anglep1]=gyroalgorithm_7_21_2021(DGyro,TTr,seq,gyro_an
     %X(1+50*(i-1):50*i)=X(1+50*(i-1):50*i)-Gyrostat;
     
     if data_flag == 1
-%         x=mod((seq-seqp),255);% need to remove
+        x=mod((seq-seqp),255);% need to remove
         gyro_anglep1=gyro_anglep-Gyrostat*dt*SC*mod((seq-seqp),255);%((seqp-seq)+255); %mod(-(seqp-seq),255);
         gyro_angle=-realtime_angle_original+gyro_anglep1;
     else
-%         x=mod((seq-seqp),255);% need to remove
+        x=mod((seq-seqp),255);% need to remove
         gyro_anglep1=gyro_anglep-Gyrostat*dt*SC*mod((seq-seqp),255);%(seq-seqp); %mod((seq-seqp),255);
         gyro_angle=realtime_angle_original-gyro_anglep1;
     end
-%     x=x; % need to remove
+    x=x; % need to remove
 end 
