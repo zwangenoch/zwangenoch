@@ -144,11 +144,11 @@ end
 % [file,path] = uigetfile(".csv");
 file = 0;  %% skip load stationary process, Shan May12
 
-if file==0
-    Stationdata=[];
-else
-    DD1=readmatrix (strcat(path,file));
-gyro_readings=DD1(:,50:99);
+% if file==0
+%     Stationdata=[];
+% else
+%     DD1=readmatrix (strcat(path,file));
+% gyro_readings=DD1(:,50:99);
 for i=1:length(gyro_readings)
    for j=1:50
     if gyro_readings(i,j)>2^15
@@ -157,8 +157,8 @@ for i=1:length(gyro_readings)
    end 
 end 
 Stationdata=mean(gyro_readings,'all');
-Stationdata(2)=mean(DD1(:,107),'all');
-end
+Stationdata(2)=mean(gyro_temperature,'all');
+% end
 
     
 cas_mean_original = mean(casing_original(:));
@@ -179,7 +179,10 @@ for i=1:length(TGyro)
 end
 
 % [GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
-[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+data_flag=0;
+[GyroProCalib,CalibTGyroPro]= DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+GyroProCalib = Gyrocalib;
+CalibTGyroPro = CalibTGyro;  %
 data_flag = 1;
 for i=1:length(TGyro)
    if i==1
