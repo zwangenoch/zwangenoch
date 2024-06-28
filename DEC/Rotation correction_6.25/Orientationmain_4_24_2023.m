@@ -221,18 +221,18 @@ for i=1:length(TGyro)
             end
             if ACC_ori_flag==0
                 ACC_ori_flag=1; % turn the currently using flag on
-                highside=PHiDE(i)-FullOrientation(i)+195; %Counter for high side 
+                highside=PHiDE(i)-mod(FullOrientation(i),360)+195; %Counter for high side 
                 ori_diff(1:i) = 0; % all ori_diff no need to change before ACC first use
                 if data_flag == 1
-                    highside=-(-PHiDE(i)+FullOrientation(i)-165); 
+                    highside=-(-PHiDE(i)+mod(FullOrientation(i),360)-165); 
                 end
             elseif ACC_ori_flag==1
                 ori_diff(i) = ori_diff(i-1);
             elseif ACC_ori_flag==2 && Gyro_ori_flag==1 % meaning ACC was used before and reused after using gyro
                 ACC_ori_flag=1; % turn the currently using flag on
-                ori_diff(i)=(PHiDE(i)-FullOrientation(i)+195)-highside; %compensate difference of highside change
+                ori_diff(i)=(PHiDE(i)-mod(FullOrientation(i),360)+195)-highside; %compensate difference of highside change
                 if data_flag == 1
-                    ori_diff(i)=-(-PHiDE(i)+FullOrientation(i)-165)-highside; 
+                    ori_diff(i)=-(-PHiDE(i)+mod(FullOrientation(i),360)-165)-highside; 
                 end
                 if ori_diff(i) < -180
                     ori_diff(i) = ori_diff(i) + 360; % avoid ori_diff<-180 because FullOrientation is never less than -180
