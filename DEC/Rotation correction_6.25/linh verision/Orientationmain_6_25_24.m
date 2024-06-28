@@ -1,6 +1,6 @@
 function [ThetaDE,FullOrientation,... %BCasing1, BTubing1,
-    BCasinOriented, BTubinOriented,Depth_new] = Orientationmain_4_24_2023( depth, gyro_readings, Dataace22,...
-    gyro_temperature, ccb_temp, seq_num, casing_original,tubing_original,realtime_angle_original2,Tool_num)
+    BCasinOriented, BTubinOriented,Depth_new] = Orientationmain_6_25_24( depth, gyro_readings, Dataace22,...
+    gyro_temperature, ccb_temp, seq_num, casing_original,tubing_original,realtime_angle_original2,Tool_num,data_flag)
 % depth(realtime_angle_original2==0)=[];
 % gyro_readings(realtime_angle_original2==0,:)=[];
 %  Dataace22(realtime_angle_original2==0,:)=[];
@@ -100,7 +100,7 @@ for i=2:length(SeqNum2)
         drd=drd+1;
     end 
 end
-
+% data_flag = 0;
 Dataace2 = zeros(drd,6);     % two accelerometer with 3 axis, sampling at 100ms
 TGyro= zeros(drd,1);      % Temperature Data at Digital Gyro.
 TAccel= zeros(drd,1);      % Temperature Data at Controller Board.
@@ -144,11 +144,11 @@ end
 % [file,path] = uigetfile(".csv");
 file = 0;  %% skip load stationary process, Shan May12
 
-% if file==0
-%     Stationdata=[];
-% else
-%     DD1=readmatrix (strcat(path,file));
-% gyro_readings=DD1(:,50:99);
+if file==0
+    Stationdata=[];
+else
+    DD1=readmatrix (strcat(path,file));
+gyro_readings=DD1(:,50:99);
 for i=1:length(gyro_readings)
    for j=1:50
     if gyro_readings(i,j)>2^15
@@ -157,8 +157,8 @@ for i=1:length(gyro_readings)
    end 
 end 
 Stationdata=mean(gyro_readings,'all');
-Stationdata(2)=mean(gyro_temperature,'all');
-% end
+Stationdata(2)=mean(DD1(:,107),'all');
+end
 
     
 cas_mean_original = mean(casing_original(:));
@@ -178,90 +178,44 @@ for i=1:length(TGyro)
     end
 end
 
-%% revision by Ze Wang, Jun 26, 2024, flags for adjust highside angle difference when switching to ACC with previous using of ACC and gyro
-% ori_diff is a array that has same dimension of zeros(drd,1)
-% when the tool is using ACC->gyro->ACC for orientation, the ori_diff array
-% will correct highside angle difference at switching
-ori_diff = zeros(drd,1);
-% 0: never using 
-% 1: currently using
-% 2: previous used, currently not using
-ACC_ori_flag = 0; 
-Gyro_ori_flag = 0;
-status(1)=0;
-
-%% revision by Ze Wang, function DEC1_accelerometer_phi_theta_5_21_2024 is used to calculate phi and theta
-data_flag = 0;
-%[GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
-%%% comment out gyro calibration adjusting for stability, June 18. 24 by Ze Wang
-[GyroProCalib,CalibTGyroPro]= DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
-% GyroProCalib = Gyrocalib;
-% CalibTGyroPro = CalibTGyro;  % keep gyro calibration temp and para as same as lab set
-data_flag = 1;
+% [GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+% Need to change the name
+[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
 for i=1:length(TGyro)
    if i==1
+               [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
 %         [PHiDE(i),ThetaDE(i)] = AccDE01_7_21_2021(Dataace2(i,:),TAccel(i),xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
-% revised by Ze Jun 4. 2024, revised algorithm for angle calculation
-        [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
    else 
+               [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
 %         [PHiDE(i),ThetaDE(i)] = AccDE01_7_21_2021(Dataace2(i,:),TAccel(i),xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
-% revised by Ze Jun 4. 2024, revised algorithm for angle calculation
-        [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);
-        [gyro_angle(i),offset(i),Gyrostat(i), modvalue(i)]=gyroalgorithm_6_25_24(Gyro(i,:),TGyro(i),seq(i),offset(i-1),seq(i-1),CalibTGyroPro,GyroProCalib,SC,data_flag,realtime_angle_original(i));
-        % buffer 5-7 is added to avoid orientation jumping between gyro and ACC frequently
-        if (Gyro_ori_flag ~= 1 && abs(ThetaDE(i))>5) || (Gyro_ori_flag == 1 && abs(ThetaDE(i))>7 && ACC_ori_flag==2)...
-                || (Gyro_ori_flag == 1 && abs(ThetaDE(i))>5 && ACC_ori_flag==0)
-            status(i)=1;
+        % Need to update the name
+        [gyro_angle(i),offset(i)]=gyroalgorithm_6_25_24(Gyro(i,:),TGyro(i),seq(i),offset(i-1),seq(i-1),CalibTGyroPro,GyroProCalib,SC,data_flag,realtime_angle_original(i)); 
+       
+        if (abs(ThetaDE(i))>5)   % Original condition
+        % if (abs(ThetaDE(i))>1)  
             if (PHiDE(i)-PHiDE(i-1))>180
                 FullOrientation(i)=FullOrientation(i-1)+(PHiDE(i)-PHiDE(i-1))-360;
             elseif (PHiDE(i)-PHiDE(i-1))<-180
                 FullOrientation(i)=FullOrientation(i-1)+(PHiDE(i)-PHiDE(i-1))+360;
             else 
                 FullOrientation(i)=FullOrientation(i-1)+(PHiDE(i)-PHiDE(i-1));
-            end
-            if ACC_ori_flag==0
-                ACC_ori_flag=1; % turn the currently using flag on
-                highside=PHiDE(i)-mod(FullOrientation(i),360)+195; %Counter for high side 
-                ori_diff(1:i) = 0; % all ori_diff no need to change before ACC first use
+            end 
+            if adc==0
+                highside=PHiDE(i)-FullOrientation(i)+195; %Counter for high side 
+                adc=adc+1;
                 if data_flag == 1
-                    highside=-(-PHiDE(i)+mod(FullOrientation(i),360)-165); 
+                    highside=-(-PHiDE(i)+FullOrientation(i)-165); 
                 end
-            elseif ACC_ori_flag==1
-                ori_diff(i) = ori_diff(i-1);
-            elseif ACC_ori_flag==2 && Gyro_ori_flag==1 % meaning ACC was used before and reused after using gyro
-                ACC_ori_flag=1; % turn the currently using flag on
-                ori_diff(i)=(PHiDE(i)-mod(FullOrientation(i),360)+195)-highside; %compensate difference of highside change
-                if data_flag == 1
-                    ori_diff(i)=-(-PHiDE(i)+mod(FullOrientation(i),360)-165)-highside; 
-                end
-                if ori_diff(i) < -180
-                    ori_diff(i) = ori_diff(i) + 360; % avoid ori_diff<-180 because FullOrientation is never less than -180
-                end
-                % adjust previous gyro angle data
-                ori_diff_grad = (ori_diff(i)-ori_diff(i_gyro_start))/(i - i_gyro_start);
-                for n = i_gyro_start:(i-1)
-                    ori_diff(n) = ori_diff(n) + (n-i_gyro_start+1) * ori_diff_grad;
-                end   
-            end                   
-            % reset gyro ori status
-            if Gyro_ori_flag==1
-                Gyro_ori_flag = 2;
-            end
+            end 
+            
         else 
-            status(i)=2;
-            Gyro_ori_flag = 1;
-            ori_diff(i) = ori_diff(i-1);
-            if ACC_ori_flag==1
-                ACC_ori_flag = 2;
-                i_gyro_start = i;
-            end
             FullOrientation(i)=(FullOrientation(i-1)+(gyro_angle(i)-gyro_angle(i-1)));
         end
     % Gyroscope data perparation
    end 
 end
  
-FullOrientation=FullOrientation + highside + transpose(ori_diff); % use ori_diff to compensate highside rotation
+FullOrientation=FullOrientation+highside;
 
 %% revision of high resolution to 1 degree and rotation shift in this section
 % BCasinOriented=zeros(size(BCas_original));
