@@ -100,7 +100,7 @@ for i=2:length(SeqNum2)
         drd=drd+1;
     end 
 end
-% data_flag = 0;
+data_flag = 1;
 Dataace2 = zeros(drd,6);     % two accelerometer with 3 axis, sampling at 100ms
 TGyro= zeros(drd,1);      % Temperature Data at Digital Gyro.
 TAccel= zeros(drd,1);      % Temperature Data at Controller Board.
@@ -191,7 +191,8 @@ Gyro_ori_flag = 0;
 status(1)=0;
 
 % [GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
-[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
+data_flag_gyrocalib = 0; % always use log down for gyro calibration
+[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag_gyrocalib,realtime_angle_original);
 for i=1:length(TGyro)
    if i==1
                [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_5_21_2024(Dataace2(i,:),TAccel(i),x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,data_flag);

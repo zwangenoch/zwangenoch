@@ -1,4 +1,4 @@
-function [acc_calibration_para,acc_calibration_temperature,gyro_calibration_temperature,gyro_calibration_para,SC]=loadclibdat(Tool_num)
+function [acc_calibration_para,acc_calibration_temperature,gyro_calibration_temperature,gyro_calibration_para,SC,ang_comp_C,ang_comp_T]=loadclibdat(Tool_num)
 switch Tool_num
     case 19903
 acc_calibration_para=[18077,21607,14405,18549,22098,15195,18046,21718,14336,18425,21754,14480,18064,21763,14473,18493,22100,15106									
@@ -375,6 +375,8 @@ gyro_calibration_para=[-36.2,-40.01,-41.79,-41.98,-41.45,-39.44,-36.66,-33.68,-3
 gyro_calibration_temperature=[72,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300
 ];
 SC=1.015;
+ang_comp_C=4.9;
+ang_comp_T=4.9;
 case 23919  
 acc_calibration_para=[18529,22256,14858,18195,21831,14539,18178,21897,14462,18113,21821,14402,18287,21951,14631,18451,22133,14816
 18402,22129,14731,18178,21814,14522,18181,21900,14465,18112,21820,14401,18286,21950,14630,18345,22027,14710
