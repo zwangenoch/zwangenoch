@@ -40,7 +40,14 @@ GyroData2 = gyro_readings;
 seq = seq_num;
 % Tool_num=21945;
 K=1;
-[acc_calibration_para,acc_calibration_temperature,gyro_calibration_temperature,gyro_calibration_para,SC]=loadclibdat(Tool_num);
+%% read most up-to-date ini config file for ACC and gyro calibration parameters, instead of using .m hardcoded. Need to modify before use
+% revised by Ze Wang Aug 2, 2024
+% [acc_calibration_para,acc_calibration_temperature,gyro_calibration_temperature,gyro_calibration_para,SC]=loadclibdat(Tool_num);
+file_path = 'C:\Users\ze.wang\OneDrive - GOWell OilField Technology\Ze Wang\Github Code\zwangenoch\DEC\Final version 7.18\GWDECTool_Cal 17.ini';
+instrument_name = num2str(Tool_num); 
+[acc_calibration_para, acc_calibration_temperature, gyro_calibration_para, gyro_calibration_temperature, SC] = read_ini_file(file_path, instrument_name);
+
+%%
 % acc_calibration_para = shrinkrange(acc_calibration_para, acc_calibration_temperature);
 xi01        = acc_calibration_para(:, 7);
 xi901       = acc_calibration_para(:, 8);
@@ -193,9 +200,9 @@ status(1)=0;
 
 % [GyroProCalib,CalibTGyroPro]=ProminanceAlgorithmupdates_UPDATE(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag,realtime_angle_original);
 data_flag_gyrocalib = 0; % always use log down for gyro calibration
-% [GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag_gyrocalib,realtime_angle_original);
-GyroProCalib = Gyrocalib;
-CalibTGyroPro = CalibTGyro;
+[GyroProCalib,CalibTGyroPro]=DEC1_calibration_algorithm_gyroscope_6_25_24(Gyro,Dataace2,TGyro,TAccel,seq,SC,Gyrocalib,CalibTGyro,xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,x01,x901,x_901,y01,y901,y_901,z01,z901,z_901,CalibTAccel,Stationdata,data_flag_gyrocalib,realtime_angle_original);
+% GyroProCalib = Gyrocalib;
+% CalibTGyroPro = CalibTGyro;
 for i=1:length(TGyro)
    if i==1
                [PHiDE(i),ThetaDE(i)] = DEC1_accelerometer_phi_theta_7_11_2024(Dataace2(i,:),TAccel(i),xi01,xi901,xi_901,yi01,yi901,yi_901,zi01,zi901,zi_901,CalibTAccel,data_flag);

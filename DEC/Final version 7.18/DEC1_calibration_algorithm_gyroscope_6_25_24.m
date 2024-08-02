@@ -489,49 +489,42 @@ for i= 1:LF
     end 
 end 
 
-% %%% Revised by Ze Wang Jun19.2024 due to DL can have large portion of outlier causing problem on calib table
-% % use lab calibration parameter as a standard to remove outlier in all components
-% % get max and min limit from Gyrocalib
-% if max(Gyrocalib) > 0
-%     maxlimit = 3*max(Gyrocalib);
-% else
-%     maxlimit = 80; % empirical number
-% end
-% if min(Gyrocalib) < 0
-%     minlimit = 3*min(Gyrocalib);
-% else
-%     minlimit = -80;
-% end
-% 
-% % remove outlier in all components
-% if ~isempty(CC)
-%     idx = (CC(:, 1) > maxlimit) + (CC(:, 1) < minlimit);
-%     if ~isempty(idx)
-%         idx = idx>0;
-%         CC(idx, :) = [];
-%     end
-% end
-% if ~isempty(CAcc)
-%     idx = (CAcc(:, 1) > maxlimit) + (CAcc(:, 1) < minlimit);
-%     if ~isempty(idx)
-%         idx = idx>0;
-%         CAcc(idx, :) = [];
-%     end
-% end
-% if ~isempty(CNF)
-%     idx = (CNF(:, 1) > maxlimit) + (CNF(:, 1) < minlimit);
-%     if ~isempty(idx)
-%         idx = idx>0;
-%         CNF(idx, :) = [];
-%     end
-% end
-% if ~isempty(Stationdata)
-%     idx = (Stationdata(:, 1) > maxlimit) + (Stationdata(:, 1) < minlimit);
-%     if ~isempty(idx)
-%         idx = idx>0;
-%         Stationdata(idx, :) = [];
-%     end
-% end
+%%% Revised by Ze Wang Jun19.2024 due to DL can have large portion of outlier causing problem on calib table
+% use lab calibration parameter as a standard to remove outlier in all components
+% get max and min limit from Gyrocalib
+if max(Gyrocalib) > 0
+    maxlimit = max(Gyrocalib) + 10;
+else
+    maxlimit = 30; % empirical number
+end
+if min(Gyrocalib) < 0
+    minlimit = min(Gyrocalib) - 10;
+else
+    minlimit = -30;
+end
+
+% remove outlier in all components
+if ~isempty(CC)
+    idx = (CC(:, 1) > maxlimit) + (CC(:, 1) < minlimit);
+    if ~isempty(idx)
+        idx = idx>0;
+        CC(idx, :) = [];
+    end
+end
+if ~isempty(CAcc)
+    idx = (CAcc(:, 1) > maxlimit) + (CAcc(:, 1) < minlimit);
+    if ~isempty(idx)
+        idx = idx>0;
+        CAcc(idx, :) = [];
+    end
+end
+if ~isempty(CNF)
+    idx = (CNF(:, 1) > maxlimit) + (CNF(:, 1) < minlimit);
+    if ~isempty(idx)
+        idx = idx>0;
+        CNF(idx, :) = [];
+    end
+end
 
 % combine computed corrections to remove the drift in the gyroscope data
 if isempty(CNF)
@@ -539,6 +532,14 @@ if isempty(CNF)
 
 else
     DL= [CC;-CNF(:,1) CNF(:,4);CAcc]; %Stationdata
+end
+
+% if test is very short, DL is empty, return the lab calibration data
+% modified by Wang on July 23 2024
+if isempty(DL)
+    GyroProCalib= Gyrocalib;
+    CalibTGyroPro=CalibTGyro;
+    return;
 end
 
 % sort corrections according to temperature readings
@@ -677,7 +678,11 @@ end
 %%% revised by Ze Wang Jun19.2024
 % use moving median to smooth GyroProCalib because calibration table cannot
 % sudden change which against physics
-GyroProCalib = movmedian(GyroProCalib, 5);
+windowsize = 10;
+if windowsize >= (length(GyroProCalib)/4)
+    windowsize = round(length(GyroProCalib)/4);
+end
+GyroProCalib = movmedian(GyroProCalib, windowsize);
 
 % f= figure('Visible', 'off');
 % plot(GyroProCalib,'k')
